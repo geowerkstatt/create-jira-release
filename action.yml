@@ -21,9 +21,9 @@ runs:
         export LANG=en_US.utf-8
         export LC_ALL=en_US.utf8
         git log ${{inputs.previous-version}}...${{inputs.release-version}} | \
-          grep -oP "${{ inputs.jira-project-key }}-\d{1,}" | sort | uniq | \
+          grep -oPi "${{ inputs.jira-project-key }}-\d{1,}" | sort | uniq | \
           sed 's/^\|$/"/g' | paste -sd , | awk '{print "RELATED_JIRA_ISSUES="$0}' >> $GITHUB_ENV
-      shell: bash --noprofile --norc {0} 
+      shell: bash --noprofile --norc {0}
 
     - name: Create json and invoke webhook
       run: |
