@@ -25,8 +25,9 @@ runs:
     - name: Collect issue numbers since last release/tag
       run: |
         export LC_ALL=en_US.utf8
+        # Releases without issue references are valid, so tolerate grep exit 1 (no match) but not exit 2 (real error).
         git log $(git describe --abbrev=0 --tags HEAD^ 2> /dev/null || git rev-list --max-parents=0 HEAD)..HEAD | \
-          grep -oE "${{ inputs.jira-project-key }}-[[:digit:]]{1,}" | sort | uniq | \
+          { grep -oE "${{ inputs.jira-project-key }}-[[:digit:]]{1,}" || [ $? -eq 1 ]; } | sort | uniq | \
           sed 's/^\|$/"/g' | paste -sd , - | awk '{print "RELATED_JIRA_ISSUES="$0}' >> $GITHUB_ENV
       shell: bash
 
